@@ -13,32 +13,17 @@
   /* Mobile menu */
   const menuBtn = $('.menu-btn');
   const nav = $('#site-nav');
-  const topEl = $('.top');
-  // The slide-out panel sits right below the real header instead of under a guessed amount
-  // of padding. ".top" is the sticky part (".topbar" above it scrolls away normally), so
-  // getBoundingClientRect().bottom is its true on-screen bottom edge at the current scroll
-  // position — unlike offsetHeight, which stays the same even once .topbar has scrolled out
-  // of view and would otherwise leave a gap between the header and the panel.
-  const setNavTop = () => {
-    document.documentElement.style.setProperty('--nav-top', topEl.getBoundingClientRect().bottom + 'px');
-  };
+  // The slide-out panel's top offset is a fixed value in CSS (matching .top's own height),
+  // not computed from scroll position — .top is sticky and moves with zero lag on the
+  // compositor, so any JS-measured value is always a frame behind it and flashes a gap
+  // while scrolling. See the comment on .nav in styles.css.
   const setMenu = (open) => {
     menuBtn.setAttribute('aria-expanded', String(open));
     menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
-    if (open) setNavTop();
     nav.classList.toggle('is-open', open);
     document.body.classList.toggle('menu-open', open);
     if (open) $('a', nav).focus();
   };
-  // Background scroll isn't locked while the panel is open, and .top stays pinned at the
-  // top as the page scrolls under it, so keep --nav-top in sync while it's open.
-  let navTopTicking = false;
-  addEventListener('scroll', () => {
-    if (!nav.classList.contains('is-open') || navTopTicking) return;
-    navTopTicking = true;
-    requestAnimationFrame(() => { setNavTop(); navTopTicking = false; });
-  }, { passive: true });
-  addEventListener('resize', () => { if (nav.classList.contains('is-open')) setNavTop(); });
   menuBtn.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'));
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && nav.classList.contains('is-open')) { setMenu(false); menuBtn.focus(); }

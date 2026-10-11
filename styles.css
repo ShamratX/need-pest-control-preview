@@ -619,9 +619,14 @@ address { font-style: normal; }
   .menu-btn { display: grid; }
   .top__cta { margin-left: auto; }
   .nav {
-    /* --nav-top is measured in script.js from the real header height, so the panel starts
-       right under it instead of guessing a clearance with top padding. */
-    position: fixed; top: var(--nav-top, 110px); right: 0; bottom: 0; left: auto; z-index: 60; width: min(86vw, 360px); margin: 0; padding: 1.5rem 1.4rem 2rem;
+    /* A fixed value: .topbar (42px) + .top (86px here, 72px at the 600px breakpoint below).
+       Not computed from scroll position — while the panel is open, body.menu-open pins
+       .topbar as well as .top (both normally sticky/scrolled independently), so this
+       combined header height is constant at every scroll position instead of only matching
+       the "already scrolled past .topbar" state. A JS-measured value was tried first but is
+       always a frame behind the compositor-driven sticky header and flashes a gap while
+       actively scrolling. */
+    position: fixed; top: 128px; right: 0; bottom: 0; left: auto; z-index: 60; width: min(86vw, 360px); margin: 0; padding: 1.5rem 1.4rem 2rem;
     display: flex; flex-direction: column; gap: 1.5rem; overflow-y: auto;
     background: #fff; box-shadow: -20px 0 40px -20px rgb(10 27 51 / .5);
     transform: translateX(105%); visibility: hidden; transition: transform .35s var(--ease), visibility .35s;
@@ -649,7 +654,12 @@ address { font-style: normal; }
   .menu-btn[aria-expanded="true"] .menu-btn__open { display: none; }
   .menu-btn[aria-expanded="true"] .menu-btn__close { display: block; }
   body.menu-open::after { content: ""; position: fixed; inset: 0; z-index: 55; background: rgb(10 27 51 / .45); }
-  body.menu-open .top { z-index: 70; }
+  /* While the panel is open, pin .topbar too (normally it scrolls away on its own) so the
+     header is always the same height whether the page was scrolled before opening or not —
+     .nav's top offset below can then be one constant number instead of something that only
+     matches the "already scrolled" state (and visibly overlapped the logo otherwise). */
+  body.menu-open .topbar { position: sticky; top: 0; z-index: 69; }
+  body.menu-open .top { position: sticky; top: 42px; z-index: 70; }
   .hero { min-height: 0; }
   .hero::before { background: linear-gradient(180deg, rgb(10 27 51 / .9) 0%, rgb(10 27 51 / .66) 55%, rgb(10 27 51 / .9) 100%); }
   .hero__inner { grid-template-columns: 1fr; gap: 2rem; padding: 3.5rem 0 5.5rem; }
@@ -661,7 +671,7 @@ address { font-style: normal; }
   .banner__text, .estimate__inner > div:first-child { max-width: none; }
   .svc__side { position: static; }
   .callbar { display: flex; }
-  .foot__base { padding-bottom: 5.5rem; }
+  .foot__base { padding-bottom: 0.5rem; }
 }
 
 @media (max-width: 600px) {
@@ -669,6 +679,7 @@ address { font-style: normal; }
   .topbar__inner { justify-content: center; }
   .topbar__phone { margin-left: 0; }
   .top__inner { min-height: 72px; gap: .8rem; }
+  .nav { top: 114px; }
   .brand__mark { width: 40px; height: 42px; }
   .brand__need { font-size: 1.2rem; }
   .brand__pc { font-size: .62rem; }
