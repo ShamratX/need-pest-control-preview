@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 260 56" role="img" aria-labelledby="t">
+  <title id="t">Need Pest Control</title>
+  <path d="M26 3 46 10.5V25c0 12-8.6 21-20 26C14.6 46 6 37 6 25V10.5Z" fill="#14407a"/>
+  <path d="M26 6.6 43 13v12c0 10.2-7.2 18-17 22.6C16.2 43 9 35.2 9 25V13Z" fill="none" stroke="#f2a93b" stroke-width="1.4"/>
+  <path d="M15.5 27.5 26 18.5l10.5 9V38h-21Z" fill="none" stroke="#f4f7fb" stroke-width="2.6" stroke-linejoin="round"/>
+  <circle cx="22.2" cy="30.6" r="2.3" fill="#f2a93b"/>
+  <circle cx="29.8" cy="30.6" r="2.3" fill="#f2a93b"/>
+  <text x="58" y="30" font-family="'Open Sans', Arial, sans-serif" font-weight="800" font-size="25" letter-spacing="-0.5" fill="#14407a">NEED</text>
+  <text x="59" y="47" font-family="'Open Sans', Arial, sans-serif" font-weight="700" font-size="11.5" letter-spacing="2.6" fill="#a8680b">PEST CONTROL</text>
+</svg>
