@@ -619,7 +619,9 @@ address { font-style: normal; }
   .menu-btn { display: grid; }
   .top__cta { margin-left: auto; }
   .nav {
-    position: fixed; inset: 0 0 0 auto; z-index: 60; width: min(86vw, 360px); margin: 0; padding: 6rem 1.4rem 2rem;
+    /* --nav-top is measured in script.js from the real header height, so the panel starts
+       right under it instead of guessing a clearance with top padding. */
+    position: fixed; top: var(--nav-top, 110px); right: 0; bottom: 0; left: auto; z-index: 60; width: min(86vw, 360px); margin: 0; padding: 1.5rem 1.4rem 2rem;
     display: flex; flex-direction: column; gap: 1.5rem; overflow-y: auto;
     background: #fff; box-shadow: -20px 0 40px -20px rgb(10 27 51 / .5);
     transform: translateX(105%); visibility: hidden; transition: transform .35s var(--ease), visibility .35s;

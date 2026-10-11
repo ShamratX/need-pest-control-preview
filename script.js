@@ -13,13 +13,23 @@
   /* Mobile menu */
   const menuBtn = $('.menu-btn');
   const nav = $('#site-nav');
+  const topbar = $('.topbar');
+  // The slide-out panel sits below the real header instead of under a guessed amount of
+  // padding, so it never leaves extra white space (or, on a taller header, hides the first
+  // link). Measured fresh each open since the header's height changes with the breakpoint.
+  const setNavTop = () => {
+    const h = (topbar ? topbar.offsetHeight : 0) + $('.top').offsetHeight;
+    document.documentElement.style.setProperty('--nav-top', h + 'px');
+  };
   const setMenu = (open) => {
     menuBtn.setAttribute('aria-expanded', String(open));
     menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
+    if (open) setNavTop();
     nav.classList.toggle('is-open', open);
     document.body.classList.toggle('menu-open', open);
     if (open) $('a', nav).focus();
   };
+  addEventListener('resize', () => { if (nav.classList.contains('is-open')) setNavTop(); });
   menuBtn.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'));
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && nav.classList.contains('is-open')) { setMenu(false); menuBtn.focus(); }
