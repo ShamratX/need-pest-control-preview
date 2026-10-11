@@ -13,13 +13,14 @@
   /* Mobile menu */
   const menuBtn = $('.menu-btn');
   const nav = $('#site-nav');
-  const topbar = $('.topbar');
-  // The slide-out panel sits below the real header instead of under a guessed amount of
-  // padding, so it never leaves extra white space (or, on a taller header, hides the first
-  // link). Measured fresh each open since the header's height changes with the breakpoint.
+  const topEl = $('.top');
+  // The slide-out panel sits right below the real header instead of under a guessed amount
+  // of padding. ".top" is the sticky part (".topbar" above it scrolls away normally), so
+  // getBoundingClientRect().bottom is its true on-screen bottom edge at the current scroll
+  // position — unlike offsetHeight, which stays the same even once .topbar has scrolled out
+  // of view and would otherwise leave a gap between the header and the panel.
   const setNavTop = () => {
-    const h = (topbar ? topbar.offsetHeight : 0) + $('.top').offsetHeight;
-    document.documentElement.style.setProperty('--nav-top', h + 'px');
+    document.documentElement.style.setProperty('--nav-top', topEl.getBoundingClientRect().bottom + 'px');
   };
   const setMenu = (open) => {
     menuBtn.setAttribute('aria-expanded', String(open));
@@ -29,6 +30,14 @@
     document.body.classList.toggle('menu-open', open);
     if (open) $('a', nav).focus();
   };
+  // Background scroll isn't locked while the panel is open, and .top stays pinned at the
+  // top as the page scrolls under it, so keep --nav-top in sync while it's open.
+  let navTopTicking = false;
+  addEventListener('scroll', () => {
+    if (!nav.classList.contains('is-open') || navTopTicking) return;
+    navTopTicking = true;
+    requestAnimationFrame(() => { setNavTop(); navTopTicking = false; });
+  }, { passive: true });
   addEventListener('resize', () => { if (nav.classList.contains('is-open')) setNavTop(); });
   menuBtn.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'));
   document.addEventListener('keydown', (e) => {
