@@ -694,7 +694,7 @@ address { font-style: normal; }
   .callbox { width: 100%; }
   .foot__grid { grid-template-columns: 1fr; }
   .g-card__actions .btn { flex: 1 1 100%; }
-  .g-review { --cols: 2; --gap: .8rem; }
+  .g-review { --cols: 1; --gap: .8rem; }
 }
 
 @media (prefers-reduced-motion: reduce) {
