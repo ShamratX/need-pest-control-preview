@@ -367,13 +367,13 @@ address { font-style: normal; }
 .g-card__text { margin: .4rem 0 1.2rem; color: var(--body-c); font-size: .98rem; }
 .g-card__actions { display: flex; flex-wrap: wrap; gap: .7rem; }
 .g-card__actions .btn { min-height: 46px; font-size: .95rem; }
-.g-reviews-slider { position: relative; overflow: hidden; padding: .6rem 0 1.6rem; }
+.g-reviews-slider { position: relative; overflow: hidden; padding: .6rem 0 .8rem; }
 /* Two identical sets of cards; the track moves one card at a time (g-step keyframes, generated in build-pages.mjs) and loops seamlessly. 2.6s per card. */
 .g-reviews { display: flex; align-items: stretch; width: max-content; margin: 0; padding: 0; list-style: none; animation: g-step calc(var(--n, 20) * 2.6s) infinite; }
 .g-reviews-slider:hover .g-reviews, .g-reviews-slider:focus-within .g-reviews { animation-play-state: paused; }
 /* Card width = exactly 1/4 of the slider's own available width (the .wrap formula, replicated), so 4 land in view on desktop/tablet and 2 on mobile (below). */
-.g-review { --gap: 1.2rem; --cols: 4; flex: 0 0 calc((min(100vw - 2 * var(--gutter), var(--max)) - (var(--cols) - 1) * var(--gap)) / var(--cols)); margin-right: var(--gap); display: flex; flex-direction: column; gap: .6rem; padding: 1.4rem 1.5rem; background: #fff; border-radius: var(--radius); box-shadow: var(--shadow); transition: transform .45s var(--ease), box-shadow .45s var(--ease); }
-.g-review:hover { transform: translateY(-6px); box-shadow: 0 22px 40px -18px rgb(10 27 51 / .35); }
+.g-review { --gap: 1.2rem; --cols: 4; flex: 0 0 calc((min(100vw - 2 * var(--gutter), var(--max)) - (var(--cols) - 1) * var(--gap)) / var(--cols)); margin-right: var(--gap); display: flex; flex-direction: column; gap: .6rem; padding: 1.4rem 1.5rem; background: #fff; border-radius: var(--radius); border: 1px solid var(--line); box-shadow: none; transition: transform .45s var(--ease), border-color .3s; }
+.g-review:hover { transform: translateY(-4px); border-color: var(--amber); box-shadow: none; }
 .g-review__head { display: flex; align-items: flex-start; gap: .7rem; }
 .g-review__who { flex: 1; min-width: 0; }
 .g-review__name { margin: 0; font: var(--fw-semi) .96rem/1.3 var(--head); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
