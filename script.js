@@ -64,7 +64,7 @@
     };
     $$('.sec-head, .about__media, .about__copy, .why__copy, .estimate__inner, .faq__grid > div:first-child, .reviews__head > div:first-child, .svc__figure').forEach((el) => add(el));
     // single cards
-    $('.quote-card, .g-card, .tips, .svc__cta, .g-reviews-slider').forEach((el) => add(el, 0.1, true));
+    $$('.quote-card, .g-card, .tips, .svc__cta, .g-reviews-slider').forEach((el) => add(el, 0.1, true));
     // card groups: stagger by column so each row cascades left to right
     const groups = { '.cards': 3, '.areas': 3, '.value-grid': 3, '.crew-grid': 3, '.year': 4, '.trust__bar': 4, '.foot__panel': 3, '.steps': 5, '.contact-cards': 1, '.svc__steps': 1, '.svc__side': 1, '.faq__list': 1, '.features': 1 };
     Object.entries(groups).forEach(([sel, cols]) => {
@@ -74,7 +74,7 @@
 
   /* Pointer tilt for the main cards (mouse devices only). Sets --rx/--ry/--mx/--my; CSS does the rest. */
   if (!reduceMotion && matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    $('.card, .area, .season, .value, .crew-card, .g-card, .contact-cards li, .side-card').forEach((card) => {
+    $$('.card, .area, .season, .value, .crew-card, .g-card, .contact-cards li, .side-card').forEach((card) => {
       card.classList.add('tilt');
       let frame = 0;
       card.addEventListener('pointermove', (e) => {

@@ -367,7 +367,7 @@ address { font-style: normal; }
 .g-card__text { margin: .4rem 0 1.2rem; color: var(--body-c); font-size: .98rem; }
 .g-card__actions { display: flex; flex-wrap: wrap; gap: .7rem; }
 .g-card__actions .btn { min-height: 46px; font-size: .95rem; }
-.g-reviews-slider { position: relative; overflow: hidden; padding: .6rem 0 1.6rem; -webkit-mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent); mask-image: linear-gradient(90deg, transparent, #000 3%, #000 97%, transparent); }
+.g-reviews-slider { position: relative; overflow: hidden; padding: .6rem 0 1.6rem; }
 /* Two identical sets of cards; the track moves one card at a time (g-step keyframes, generated in build-pages.mjs) and loops seamlessly. 2.6s per card. */
 .g-reviews { display: flex; align-items: stretch; width: max-content; margin: 0; padding: 0; list-style: none; animation: g-step calc(var(--n, 20) * 2.6s) infinite; }
 .g-reviews-slider:hover .g-reviews, .g-reviews-slider:focus-within .g-reviews { animation-play-state: paused; }
@@ -702,6 +702,6 @@ address { font-style: normal; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .reveal { opacity: 1; transform: none; }
   /* no auto-scroll: let people swipe through the real cards instead */
-  .g-reviews-slider { overflow-x: auto; -webkit-mask-image: none; mask-image: none; }
+  .g-reviews-slider { overflow-x: auto; }
   .g-review[aria-hidden="true"] { display: none; }
 }
