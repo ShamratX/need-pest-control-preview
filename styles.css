@@ -147,8 +147,8 @@ address { font-style: normal; }
 .topbar__phone:hover { color: var(--amber); }
 
 /* Header + navigation */
-.top { position: sticky; top: 0; z-index: 50; background: #fff; transition: box-shadow .25s; }
-.top.is-stuck { box-shadow: 0 8px 24px -14px rgb(10 27 51 / .35); }
+.top { position: sticky; top: 0; z-index: 70; background: #fff; border-bottom: 1px solid rgba(10, 27, 51, 0.06); transition: box-shadow .25s, background-color .25s; }
+.top.is-stuck, body.menu-open .top { box-shadow: 0 10px 28px -12px rgb(10 27 51 / .2); }
 .top__inner { display: flex; align-items: center; gap: 2rem; min-height: 86px; }
 .nav { margin-left: auto; }
 .nav__list { display: flex; align-items: center; gap: 2rem; }
@@ -210,8 +210,10 @@ address { font-style: normal; }
   .dd-all:hover { color: var(--amber); }
 }
 .nav__mobile-cta { display: none; }
-.menu-btn { display: none; place-items: center; width: 48px; height: 48px; padding: 0; border: 0; border-radius: 10px; background: var(--chalk); color: var(--spruce); cursor: pointer; }
-.menu-btn .i { width: 24px; height: 24px; }
+.nav__head { display: none; }
+.menu-btn { display: none; place-items: center; width: 44px; height: 44px; padding: 0; border: 1px solid rgba(10, 27, 51, 0.08); border-radius: 12px; background: #f4f6fa; color: var(--spruce); cursor: pointer; transition: all .2s var(--ease); }
+.menu-btn:hover { background: #e9eef5; color: var(--night); }
+.menu-btn .i { width: 22px; height: 22px; }
 .menu-btn__close { display: none; }
 
 /* Hero: full-bleed photo, navy gradient, one glass review card */
@@ -618,48 +620,50 @@ address { font-style: normal; }
   .ba__wrap { grid-template-columns: 1fr; }
   .menu-btn { display: grid; }
   .top__cta { margin-left: auto; }
+  /* A full-viewport overlay, not a panel pinned below the header: it carries its own brand
+     and close row (.nav__head), so it never has to match the real header's current height —
+     which on mobile shifts with scroll position, sticky state and the browser's own chrome
+     (address bar) expanding or collapsing. That coupling was the source of the panel landing
+     at the wrong offset after scrolling down and reloading. */
   .nav {
-    /* A fixed value: .topbar (42px) + .top (86px here, 72px at the 600px breakpoint below).
-       Not computed from scroll position — while the panel is open, body.menu-open pins
-       .topbar as well as .top (both normally sticky/scrolled independently), so this
-       combined header height is constant at every scroll position instead of only matching
-       the "already scrolled past .topbar" state. A JS-measured value was tried first but is
-       always a frame behind the compositor-driven sticky header and flashes a gap while
-       actively scrolling. */
-    position: fixed; top: 128px; right: 0; bottom: 0; left: auto; z-index: 60; width: min(86vw, 360px); margin: 0; padding: 1.5rem 1.4rem 2rem;
-    display: flex; flex-direction: column; gap: 1.5rem; overflow-y: auto;
-    background: #fff; box-shadow: -20px 0 40px -20px rgb(10 27 51 / .5);
+    position: fixed; inset: 0; z-index: 80; width: 100%; margin: 0; padding: 0;
+    display: flex; flex-direction: column;
+    background: linear-gradient(165deg, #123363 0%, var(--night) 65%);
     transform: translateX(105%); visibility: hidden; transition: transform .35s var(--ease), visibility .35s;
   }
   .nav.is-open { transform: none; visibility: visible; }
-  .nav__list { flex-direction: column; align-items: stretch; gap: 0; }
-  .nav__item { flex-wrap: wrap; justify-content: space-between; border-bottom: 1px solid var(--line); }
-  .nav__link { padding: 1rem 0; font-size: .95rem; }
+  .nav__head { display: flex; align-items: center; justify-content: space-between; flex: none; padding: max(1.1rem, env(safe-area-inset-top)) 1.4rem 1.1rem; border-bottom: 1px solid rgb(255 255 255 / .12); }
+  .nav__close { display: grid; place-items: center; flex: none; width: 44px; height: 44px; padding: 0; border: 1px solid rgb(255 255 255 / .18); border-radius: 12px; background: rgb(255 255 255 / .06); color: #fff; cursor: pointer; transition: background-color .2s; }
+  .nav__close:hover { background: rgb(255 255 255 / .14); }
+  .nav__close .i { width: 20px; height: 20px; }
+  .nav__list { flex: 1 1 auto; min-height: 0; overflow-y: auto; flex-direction: column; align-items: stretch; gap: 0; margin: 0; padding: .4rem 1.4rem 1rem; }
+  .nav__item { flex-wrap: wrap; justify-content: space-between; border-bottom: 1px solid rgb(255 255 255 / .1); }
+  .nav__link { padding: 1.05rem 0; font-size: 1rem; color: #fff; }
+  .nav__link[aria-current="page"] { color: var(--amber); }
   .nav__link::after { display: none; }
-  .nav__drop-btn { width: 44px; height: 44px; }
-  .nav__drop { position: static; flex-basis: 100%; width: auto; min-width: 0; padding: 0 0 .8rem; box-shadow: none; border: 0; border-radius: 0; display: none; grid-template-columns: 1fr; gap: 0; opacity: 1; visibility: visible; translate: none; }
+  .nav__drop-btn { width: 44px; height: 44px; color: #fff; }
+  .nav__drop { position: static; flex-basis: 100%; width: auto; min-width: 0; padding: 0 0 .8rem; background: none; box-shadow: none; border: 0; border-radius: 0; display: none; grid-template-columns: 1fr; gap: 0; opacity: 1; visibility: visible; translate: none; }
   .nav__drop::before, .nav__drop::after { display: none; }
   .dd-item { padding: .5rem .3rem; }
   .dd-thumb { width: 44px; height: 44px; }
+  .dd-name { color: #fff; }
   .dd-sub { display: none; }
-  .dd-foot { margin: .4rem 0 0; padding: .7rem .8rem; }
-  .dd-call { display: none; }
+  .dd-item:hover, .dd-item[aria-current="page"] { background: rgb(255 255 255 / .07); }
+  .dd-item:hover .dd-name, .dd-item[aria-current="page"] .dd-name { color: var(--amber); }
+  .dd-foot { display: none; }
   .dd-list { grid-template-columns: 1fr; gap: 0; }
-  .dd-areas { padding: .8rem .3rem 0; margin-top: .5rem; border-left: 0; border-top: 1px solid var(--line); }
-  .dd-areas a { margin: 0; padding: .55rem .3rem; font-size: .85rem; }
+  .dd-areas { padding: .8rem .3rem 0; margin-top: .5rem; border-left: 0; border-top: 1px solid rgb(255 255 255 / .1); }
+  .dd-areas a { margin: 0; padding: .55rem .3rem; font-size: .85rem; color: #dbe6f5; }
+  .dd-areas a:hover { background: rgb(255 255 255 / .07); color: var(--amber); }
   .nav__item--drop:hover .nav__drop { display: none; }
   .nav__item--drop.is-open .nav__drop { display: grid; translate: none; }
-  .nav__mobile-cta { display: flex; }
-  .menu-btn[aria-expanded="true"] { position: relative; z-index: 70; }
+  .nav__mobile-cta { display: flex; flex: none; margin: 1.1rem 1.4rem max(1.4rem, env(safe-area-inset-bottom)); }
   .menu-btn[aria-expanded="true"] .menu-btn__open { display: none; }
   .menu-btn[aria-expanded="true"] .menu-btn__close { display: block; }
-  body.menu-open::after { content: ""; position: fixed; inset: 0; z-index: 55; background: rgb(10 27 51 / .45); }
-  /* While the panel is open, pin .topbar too (normally it scrolls away on its own) so the
-     header is always the same height whether the page was scrolled before opening or not —
-     .nav's top offset below can then be one constant number instead of something that only
-     matches the "already scrolled" state (and visibly overlapped the logo otherwise). */
-  body.menu-open .topbar { position: sticky; top: 0; z-index: 69; }
-  body.menu-open .top { position: sticky; top: 42px; z-index: 70; }
+  /* Scroll lock while the menu is open: script.js sets body { top: -<scrollY>px } before
+     adding this class, then restores scrollTo(0, scrollY) after removing it, so the page
+     can't scroll (or get scrolled back to by the browser) behind the full-screen panel. */
+  body.menu-open { position: fixed; left: 0; right: 0; }
   .hero { min-height: 0; }
   .hero::before { background: linear-gradient(180deg, rgb(10 27 51 / .9) 0%, rgb(10 27 51 / .66) 55%, rgb(10 27 51 / .9) 100%); }
   .hero__inner { grid-template-columns: 1fr; gap: 2rem; padding: 3.5rem 0 5.5rem; }
@@ -679,7 +683,6 @@ address { font-style: normal; }
   .topbar__inner { justify-content: center; }
   .topbar__phone { margin-left: 0; }
   .top__inner { min-height: 72px; gap: .8rem; }
-  .nav { top: 114px; }
   .brand__mark { width: 40px; height: 42px; }
   .brand__need { font-size: 1.2rem; }
   .brand__pc { font-size: .62rem; }

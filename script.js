@@ -10,26 +10,35 @@
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
-  /* Mobile menu */
+  /* Mobile menu: a full-viewport overlay (see .nav in styles.css), so it never has to be
+     measured against or lined up with the real header's current height/scroll state. While
+     it's open the background is locked in place (instead of just left scrollable underneath
+     a fixed panel) so a scroll position carried over from before the menu opened — including
+     one restored by the browser on reload — can't leave the page and the panel disagreeing
+     about where the top of the viewport is. */
   const menuBtn = $('.menu-btn');
+  const navClose = $('.nav__close');
   const nav = $('#site-nav');
-  // The slide-out panel's top offset is a fixed value in CSS (matching .top's own height),
-  // not computed from scroll position — .top is sticky and moves with zero lag on the
-  // compositor, so any JS-measured value is always a frame behind it and flashes a gap
-  // while scrolling. See the comment on .nav in styles.css.
+  let lockedScrollY = 0;
   const setMenu = (open) => {
     menuBtn.setAttribute('aria-expanded', String(open));
     menuBtn.setAttribute('aria-label', open ? 'Close menu' : 'Open menu');
     nav.classList.toggle('is-open', open);
-    document.body.classList.toggle('menu-open', open);
-    if (open) $('a', nav).focus();
+    if (open) {
+      lockedScrollY = window.scrollY;
+      document.body.style.top = `-${lockedScrollY}px`;
+      document.body.classList.add('menu-open');
+      navClose.focus();
+    } else {
+      document.body.classList.remove('menu-open');
+      document.body.style.top = '';
+      window.scrollTo(0, lockedScrollY);
+    }
   };
   menuBtn.addEventListener('click', () => setMenu(menuBtn.getAttribute('aria-expanded') !== 'true'));
+  navClose.addEventListener('click', () => { setMenu(false); menuBtn.focus(); });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && nav.classList.contains('is-open')) { setMenu(false); menuBtn.focus(); }
-  });
-  document.addEventListener('click', (e) => {
-    if (nav.classList.contains('is-open') && !nav.contains(e.target) && !menuBtn.contains(e.target)) setMenu(false);
   });
   matchMedia('(min-width: 961px)').addEventListener('change', (e) => { if (e.matches) setMenu(false); });
 
