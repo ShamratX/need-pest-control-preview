@@ -10,6 +10,15 @@
   addEventListener('scroll', onScroll, { passive: true });
   onScroll();
 
+  /* Review card width: measured, not calc()'d from the viewport — see the comment on
+     .g-review in styles.css for why. */
+  const reviewSlider = $('.g-reviews-slider');
+  if (reviewSlider) {
+    const setSliderW = () => reviewSlider.style.setProperty('--slider-w', reviewSlider.clientWidth + 'px');
+    setSliderW();
+    (window.ResizeObserver ? new ResizeObserver(setSliderW).observe(reviewSlider) : addEventListener('resize', setSliderW));
+  }
+
   /* Mobile menu: a full-viewport overlay (see .nav in styles.css), so it never has to be
      measured against or lined up with the real header's current height/scroll state. While
      it's open the background is locked in place (instead of just left scrollable underneath

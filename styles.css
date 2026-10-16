@@ -373,8 +373,14 @@ address { font-style: normal; }
 /* Two identical sets of cards; the track moves one card at a time (g-step keyframes, generated in build-pages.mjs) and loops seamlessly. 2.6s per card. */
 .g-reviews { display: flex; align-items: stretch; width: max-content; margin: 0; padding: 0; list-style: none; animation: g-step calc(var(--n, 20) * 2.6s) infinite; }
 .g-reviews-slider:hover .g-reviews, .g-reviews-slider:focus-within .g-reviews { animation-play-state: paused; }
-/* Card width = exactly 1/4 of the slider's own available width (the .wrap formula, replicated), so 4 land in view on desktop/tablet and 2 on mobile (below). */
-.g-review { --gap: 1.2rem; --cols: 4; flex: 0 0 calc((min(100vw - 2 * var(--gutter), var(--max)) - (var(--cols) - 1) * var(--gap)) / var(--cols)); margin-right: var(--gap); display: flex; flex-direction: column; gap: .6rem; padding: 1.4rem 1.5rem; background: #fff; border-radius: var(--radius); border: 1px solid var(--line); box-shadow: none; transition: transform .45s var(--ease), border-color .3s; }
+/* Card width = exactly 1/4 of the slider's own measured width (--slider-w, set in script.js),
+   so 4 land in view on desktop/tablet and 2 on mobile (below). This used to replicate the
+   slider's width in CSS with calc(min(100vw - 2*var(--gutter), var(--max)) - ...) / var(--cols)) —
+   four levels of nested calc/min/clamp through custom properties, which WebKit can fail to
+   resolve (the card collapses to 0 width, so the whole row goes blank once the animation moves
+   it) even though Chrome has always handled it fine. One flat calc() against a JS-measured
+   pixel width has no nesting left to fail. */
+.g-review { --gap: 1.2rem; --cols: 4; flex: 0 0 calc((var(--slider-w, 1180px) - (var(--cols) - 1) * var(--gap)) / var(--cols)); margin-right: var(--gap); display: flex; flex-direction: column; gap: .6rem; padding: 1.4rem 1.5rem; background: #fff; border-radius: var(--radius); border: 1px solid var(--line); box-shadow: none; transition: transform .45s var(--ease), border-color .3s; }
 .g-review:hover { transform: translateY(-4px); border-color: var(--amber); box-shadow: none; }
 .g-review__head { display: flex; align-items: flex-start; gap: .7rem; }
 .g-review__who { flex: 1; min-width: 0; }
