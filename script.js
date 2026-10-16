@@ -11,12 +11,27 @@
   onScroll();
 
   /* Review card width: measured, not calc()'d from the viewport — see the comment on
-     .g-review in styles.css for why. */
+     .g-review in styles.css for why. The track's step animation moves it by a percentage of
+     its own total width each keyframe; that total width is the sum of every card's flex-basis,
+     which is itself driven by --slider-w. So any time --slider-w changes — including the very
+     first time, from the CSS fallback to the real measured value — the same keyframe percentage
+     suddenly maps to a different pixel distance and the row visibly jumps, sometimes by more
+     than one card. Restarting the animation on every change re-syncs it from 0% against the
+     width that's actually current, instead of letting it keep running against a stale one. */
   const reviewSlider = $('.g-reviews-slider');
-  if (reviewSlider) {
-    const setSliderW = () => reviewSlider.style.setProperty('--slider-w', reviewSlider.clientWidth + 'px');
+  const reviewTrack = $('.g-reviews', reviewSlider || document);
+  if (reviewSlider && reviewTrack) {
+    const setSliderW = () => {
+      reviewSlider.style.setProperty('--slider-w', reviewSlider.clientWidth + 'px');
+      reviewTrack.style.animation = 'none';
+      void reviewTrack.offsetWidth; // force reflow so the restart actually takes effect
+      reviewTrack.style.animation = '';
+    };
     setSliderW();
-    (window.ResizeObserver ? new ResizeObserver(setSliderW).observe(reviewSlider) : addEventListener('resize', setSliderW));
+    let resizeT;
+    const onResize = () => { clearTimeout(resizeT); resizeT = setTimeout(setSliderW, 150); };
+    if (window.ResizeObserver) new ResizeObserver(onResize).observe(reviewSlider);
+    else addEventListener('resize', onResize);
   }
 
   /* Mobile menu: a full-viewport overlay (see .nav in styles.css), so it never has to be
