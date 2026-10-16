@@ -11,13 +11,9 @@
   onScroll();
 
   /* Review card width: measured, not calc()'d from the viewport — see the comment on
-     .g-review in styles.css for why. The track's step animation moves it by a percentage of
-     its own total width each keyframe; that total width is the sum of every card's flex-basis,
-     which is itself driven by --slider-w. So any time --slider-w changes — including the very
-     first time, from the CSS fallback to the real measured value — the same keyframe percentage
-     suddenly maps to a different pixel distance and the row visibly jumps, sometimes by more
-     than one card. Restarting the animation on every change re-syncs it from 0% against the
-     width that's actually current, instead of letting it keep running against a stale one. */
+     .g-review in styles.css for why. On desktop the track still moves on a CSS keyframe
+     animation (percentage-of-own-width per step), so changing --slider-w and restarting it
+     keeps that in sync. */
   const reviewSlider = $('.g-reviews-slider');
   const reviewTrack = $('.g-reviews', reviewSlider || document);
   if (reviewSlider && reviewTrack) {
@@ -32,6 +28,55 @@
     const onResize = () => { clearTimeout(resizeT); resizeT = setTimeout(setSliderW, 150); };
     if (window.ResizeObserver) new ResizeObserver(onResize).observe(reviewSlider);
     else addEventListener('resize', onResize);
+
+    /* Mobile: not the CSS keyframe animation at all (disabled in styles.css at the 600px
+       breakpoint) — a percentage-of-the-track's-own-width transform is fundamentally fragile
+       whenever that width can change under it (exactly what kept going wrong). Native scroll +
+       scroll-snap is what the platform gives you for "swipe through cards, snap to one at a
+       time" and doesn't have that problem: position is a real scroll offset, not a percentage
+       re-interpreted against a moving denominator. JS only auto-advances it one real card at a
+       time, the same way the user's own swipe would. */
+    const mobileMq = matchMedia('(max-width: 600px)');
+    let mobileTimer = null;
+    const cardStep = () => {
+      const card = reviewTrack.querySelector('.g-review');
+      if (!card) return 0;
+      const style = getComputedStyle(card);
+      return card.getBoundingClientRect().width + parseFloat(style.marginRight || 0);
+    };
+    // Real cards, then an identical cloned set appended after them (see build-pages.mjs) —
+    // the same trick the desktop keyframe animation uses to loop seamlessly. --n (set on
+    // .g-reviews, already used by the desktop animation-duration formula) is the real count;
+    // one card-width past the last real card lands on the first clone, which looks identical
+    // to the first real card, so that's the point to silently snap back to 0 from.
+    const realCount = () => parseInt(getComputedStyle(reviewTrack).getPropertyValue('--n'), 10) || reviewTrack.children.length / 2;
+    const advance = () => {
+      const step = cardStep();
+      const n = realCount();
+      if (!step || !n) return;
+      const realWidth = step * n;
+      const next = reviewSlider.scrollLeft + step;
+      reviewSlider.scrollTo({ left: next, behavior: 'smooth' });
+      if (next >= realWidth - 2) {
+        setTimeout(() => { reviewSlider.scrollTo({ left: 0, behavior: 'auto' }); }, 500);
+      }
+    };
+    const stopMobileAuto = () => { clearInterval(mobileTimer); mobileTimer = null; };
+    const startMobileAuto = () => {
+      if (mobileTimer || !mobileMq.matches || reduceMotion) return;
+      mobileTimer = setInterval(advance, 2600);
+    };
+    const syncMobileAuto = () => { stopMobileAuto(); startMobileAuto(); };
+    syncMobileAuto();
+    mobileMq.addEventListener('change', syncMobileAuto);
+    // A real swipe is its own "advance" — don't fight it or jump mid-gesture. Pause for a
+    // breath after the user's own scroll settles, same idea as hover-pause on desktop.
+    let resumeT;
+    reviewSlider.addEventListener('touchstart', stopMobileAuto, { passive: true });
+    reviewSlider.addEventListener('scroll', () => {
+      clearTimeout(resumeT);
+      resumeT = setTimeout(startMobileAuto, 1800);
+    }, { passive: true });
   }
 
   /* Mobile menu: a full-viewport overlay (see .nav in styles.css), so it never has to be

@@ -373,14 +373,15 @@ address { font-style: normal; }
 /* Two identical sets of cards; the track moves one card at a time (g-step keyframes, generated in build-pages.mjs) and loops seamlessly. 2.6s per card. */
 .g-reviews { display: flex; align-items: stretch; width: max-content; margin: 0; padding: 0; list-style: none; animation: g-step calc(var(--n, 20) * 2.6s) infinite; }
 .g-reviews-slider:hover .g-reviews, .g-reviews-slider:focus-within .g-reviews { animation-play-state: paused; }
+/* Card width = exactly 1/4 of the slider's own available width (the .wrap formula, replicated), so 4 land in view on desktop/tablet and 2 on mobile (below). */
 /* Card width = exactly 1/4 of the slider's own measured width (--slider-w, set in script.js),
-   so 4 land in view on desktop/tablet and 2 on mobile (below). This used to replicate the
-   slider's width in CSS with calc(min(100vw - 2*var(--gutter), var(--max)) - ...) / var(--cols)) —
-   four levels of nested calc/min/clamp through custom properties, which WebKit can fail to
-   resolve (the card collapses to 0 width, so the whole row goes blank once the animation moves
-   it) even though Chrome has always handled it fine. One flat calc() against a JS-measured
-   pixel width has no nesting left to fail. */
-.g-review { --gap: 1.2rem; --cols: 4; flex: 0 0 calc((var(--slider-w, 1180px) - (var(--cols) - 1) * var(--gap)) / var(--cols)); margin-right: var(--gap); display: flex; flex-direction: column; gap: .6rem; padding: 1.4rem 1.5rem; background: #fff; border-radius: var(--radius); border: 1px solid var(--line); box-shadow: none; transition: transform .45s var(--ease), border-color .3s; }
+   so 4 land in view on desktop/tablet. This used to replicate the slider's width in CSS with
+   calc(min(100vw - 2*var(--gutter), var(--max)) - ...) / var(--cols)) — four levels of nested
+   calc/min/clamp through custom properties, which WebKit can fail to resolve (the card
+   collapses to 0 width, so the whole row goes blank once the animation moves it) even though
+   Chrome has always handled it fine. One flat calc() against a JS-measured pixel width has no
+   nesting left to fail. Mobile (600px breakpoint below) doesn't use this animation at all. */
+.g-review { --gap: 1.2rem; --cols: 4; flex: 0 0 calc((var(--slider-w, 1180px) - (var(--cols) - 1) * var(--gap)) / var(--cols)); scroll-snap-align: start; margin-right: var(--gap); display: flex; flex-direction: column; gap: .6rem; padding: 1.4rem 1.5rem; background: #fff; border-radius: var(--radius); border: 1px solid var(--line); box-shadow: none; transition: transform .45s var(--ease), border-color .3s; }
 .g-review:hover { transform: translateY(-4px); border-color: var(--amber); box-shadow: none; }
 .g-review__head { display: flex; align-items: flex-start; gap: .7rem; }
 .g-review__who { flex: 1; min-width: 0; }
@@ -704,6 +705,16 @@ address { font-style: normal; }
   .foot__grid { grid-template-columns: 1fr; }
   .g-card__actions .btn { flex: 1 1 100%; }
   .g-review { --cols: 1; --gap: .8rem; }
+  /* Native scroll + snap instead of the CSS keyframe animation (disabled here). A percentage-
+     of-the-track's-own-width transform is fundamentally fragile whenever that width can change
+     under it, which it does on a phone (dynamic toolbar showing/hiding, font-load reflow,
+     rotation) — see the long comment on the mobile block in script.js. Native scroll position
+     doesn't have that problem: it's a real offset, not a percentage re-interpreted against a
+     moving denominator. JS drives the auto-advance by calling scrollTo() a real card-width at
+     a time, same as the user's own swipe would. */
+  .g-reviews { animation: none; }
+  .g-reviews-slider { overflow-x: auto; scroll-snap-type: x mandatory; -webkit-overflow-scrolling: touch; scrollbar-width: none; }
+  .g-reviews-slider::-webkit-scrollbar { display: none; }
 }
 
 @media (prefers-reduced-motion: reduce) {
