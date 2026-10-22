@@ -284,7 +284,8 @@ address { font-style: normal; }
 .services::before { content: ""; position: absolute; right: -120px; top: -120px; width: 380px; height: 380px; border-radius: 50%; border: 50px solid rgb(242 169 59 / .12); }
 .services--light { background: var(--chalk); color: var(--ink); }
 .services--light::before { border-color: rgb(242 169 59 / .18); }
-.cards { position: relative; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1.4rem; }
+.cards { position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 1.4rem; }
+.cards > .card { flex: 0 0 calc(25% - 1.4rem * 3 / 4); }
 .card { display: flex; flex-direction: column; background: #fff; color: var(--ink); border-radius: var(--radius); overflow: hidden; box-shadow: 0 1px 0 var(--line); transition: transform .3s var(--ease), box-shadow .3s; }
 .card:hover { transform: translateY(-6px); box-shadow: 0 24px 40px -20px rgb(0 0 0 / .45); }
 .card__img { position: relative; display: block; aspect-ratio: 16 / 10; overflow: hidden; }
@@ -613,7 +614,8 @@ address { font-style: normal; }
   .topbar__tag { display: none; }
   .topbar__phone { margin-left: auto; }
   .nav__list { gap: 1.4rem; }
-  .cards, .areas, .year, .value-grid, .crew-grid { grid-template-columns: 1fr 1fr; }
+  .areas, .year, .value-grid, .crew-grid { grid-template-columns: 1fr 1fr; }
+  .cards > .card { flex-basis: calc(50% - .7rem); }
   .steps { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 2.2rem; }
   .trust__bar { grid-template-columns: 1fr 1fr; }
   .trust__bar li:nth-child(3) { border-left: 0; }
@@ -697,7 +699,8 @@ address { font-style: normal; }
   .menu-btn { margin-left: auto; }
   .estimate__media { height: 210px; }
   .hero__actions .btn, .estimate__actions .btn, .svc__cta-actions .btn { width: 100%; }
-  .trust__bar, .cards, .areas, .year, .value-grid, .crew-grid, .steps, .form { grid-template-columns: 1fr; }
+  .trust__bar, .areas, .year, .value-grid, .crew-grid, .steps, .form { grid-template-columns: 1fr; }
+  .cards > .card { flex-basis: 100%; }
   .trust__bar li + li { border-left: 0; border-top: 1px solid var(--line); }
   .about__stamp { width: 108px; height: 108px; font-size: .8rem; left: -.5rem; }
   .about__stamp strong { font-size: .95rem; }
